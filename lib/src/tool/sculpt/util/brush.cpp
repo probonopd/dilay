@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <memory>
@@ -84,16 +84,13 @@ void SBGrablikeParameters::sculpt (const SculptBrush& brush, const DynamicFaces&
 
 void SBSmoothParameters::sculpt (const SculptBrush& brush, const DynamicFaces& faces) const
 {
-  if (this->relaxOnly () == false)
-  {
-    brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
-      const glm::vec3  avgPos = brush.mesh ().averagePosition (i);
-      const glm::vec3& oldPos = brush.mesh ().vertex (i);
-      const glm::vec3  newPos = oldPos + (this->intensity () * (avgPos - oldPos));
+  brush.mesh ().forEachVertex (faces, [this, &brush](unsigned int i) {
+    const glm::vec3  avgPos = brush.mesh ().averagePosition (i);
+    const glm::vec3& oldPos = brush.mesh ().vertex (i);
+    const glm::vec3  newPos = oldPos + (this->intensity () * (avgPos - oldPos));
 
-      brush.mesh ().vertex (i, newPos);
-    });
-  }
+    brush.mesh ().vertex (i, newPos);
+  });
 }
 
 void SBReduceParameters::sculpt (const SculptBrush&, const DynamicFaces&) const {}
@@ -102,7 +99,7 @@ void SBFlattenParameters::sculpt (const SculptBrush& brush, const DynamicFaces& 
 {
   if (faces.isEmpty () == false)
   {
-    PrimPlane plane (glm::vec3 (0.0f), glm::vec3 (0.0f));
+    PrimPlane plane (glm::vec3 (0.0f), glm::vec3 (1.0f));
 
     if (this->hasLockedPlane ())
     {
@@ -191,7 +188,7 @@ struct SculptBrush::Impl
     , radius (0.0f)
     , detailFactor (0.0f)
     , stepWidthFactor (0.0f)
-    , subdivide (false)
+    , subdivide (true)
     , _mesh (nullptr)
     , hasPointOfAction (false)
   {

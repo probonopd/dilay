@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPainter>
@@ -305,6 +305,12 @@ struct ToolTrimMesh::Impl
       painter.drawLine (ViewUtil::toQPoint (this->points[this->points.size () - 1]), cursorPos);
     }
   }
+
+  ToolResponse runCommit ()
+  {
+    this->points.clear ();
+    return ToolResponse::Redraw;
+  }
 };
 
 DELEGATE_TOOL (ToolTrimMesh, "trim-mesh")
@@ -312,3 +318,4 @@ DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolTrimMesh)

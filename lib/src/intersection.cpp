@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
@@ -14,54 +14,63 @@
 #include "primitive/triangle.hpp"
 #include "util.hpp"
 
-struct Intersection::Impl
+Intersection ::Intersection ()
+  : _isIntersection (false)
+  , _distance (Util::maxFloat ())
 {
-  bool      isIntersection;
-  float     distance;
-  glm::vec3 position;
-  glm::vec3 normal;
+}
 
-  Impl ()
-    : isIntersection (false)
+bool             Intersection::isIntersection () const { return this->_isIntersection; }
+const glm::vec3& Intersection::position () const
+{
+  assert (this->_isIntersection);
+  return this->_position;
+}
+const glm::vec3& Intersection::normal () const
+{
+  assert (this->_isIntersection);
+  return this->_normal;
+}
+float Intersection::distance () const
+{
+  assert (this->_isIntersection);
+  return this->_distance;
+}
+
+void Intersection::reset () { this->_isIntersection = false; }
+
+bool Intersection::update (float d, const glm::vec3& p, const glm::vec3& n)
+{
+  if (this->_isIntersection == false || d < this->_distance)
   {
+    this->_isIntersection = true;
+    this->_distance = d;
+    this->_position = p;
+    this->_normal = n;
+    return true;
   }
+  return false;
+}
 
-  void reset () { this->isIntersection = false; }
-
-  bool update (float d, const glm::vec3& p, const glm::vec3& n)
+Intersection& Intersection::min (Intersection& a, Intersection& b)
+{
+  if (a._isIntersection && (b._isIntersection == false || a._distance < b._distance))
   {
-    if (this->isIntersection == false || d < this->distance)
-    {
-      this->isIntersection = true;
-      this->distance = d;
-      this->position = p;
-      this->normal = n;
-      return true;
-    }
-    return false;
+    return a;
   }
-
-  static Intersection& min (Intersection& a, Intersection& b)
+  else
   {
-    if (a.isIntersection () && (b.isIntersection () == false || a.distance () < b.distance ()))
-    {
-      return a;
-    }
-    else
-    {
-      return b;
-    }
+    return b;
   }
-};
+}
 
-DELEGATE_BIG6 (Intersection)
-DELEGATE (void, Intersection, reset)
-GETTER_CONST (bool, Intersection, isIntersection)
-GETTER_CONST (float, Intersection, distance)
-GETTER_CONST (const glm::vec3&, Intersection, position)
-GETTER_CONST (const glm::vec3&, Intersection, normal)
-DELEGATE3 (bool, Intersection, update, float, const glm::vec3&, const glm::vec3&)
-DELEGATE2_STATIC (Intersection&, Intersection, min, Intersection&, Intersection&)
+void Intersection::sort (Intersection& a, Intersection& b)
+{
+  if (b._isIntersection && (a._isIntersection == false || b._distance < a._distance))
+  {
+    std::swap (a, b);
+  }
+}
 
 namespace
 {
@@ -253,7 +262,7 @@ bool IntersectionUtil::intersects (const PrimRay& ray, const PrimTriangle& tri, 
   }
 }
 
-bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box)
+bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box, float* t)
 {
   const glm::vec3 invDir = glm::vec3 (1.0f) / ray.direction ();
   const glm::vec3 lowerTs = (box.minimum () - ray.origin ()) * invDir;
@@ -264,7 +273,15 @@ bool IntersectionUtil::intersects (const PrimRay& ray, const PrimAABox& box)
   const float tMin = glm::max (glm::max (min.x, min.y), min.z);
   const float tMax = glm::min (glm::min (max.x, max.y), max.z);
 
-  return (tMax >= 0.0f || ray.isLine ()) && tMin <= tMax;
+  if ((tMax >= 0.0f || ray.isLine ()) && tMin <= tMax)
+  {
+    Util::setIfNotNull (t, tMin);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool IntersectionUtil::intersects (const PrimRay& ray, const PrimCylinder& cylinder, float* tRay,

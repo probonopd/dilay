@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtx/norm.hpp>
@@ -159,11 +159,6 @@ struct SketchMesh::Impl
       });
     }
     return intersection.isIntersection ();
-  }
-
-  bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection)
-  {
-    return this->intersects (ray, intersection, 0);
   }
 
   bool intersects (const PrimRay& ray, SketchMeshIntersection& intersection,
@@ -934,7 +929,6 @@ DELEGATE1 (void, SketchMesh, fromTree, const SketchTree&)
 DELEGATE (void, SketchMesh, reset)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchNodeIntersection&)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchBoneIntersection&)
-DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&)
 DELEGATE3 (bool, SketchMesh, intersects, const PrimRay&, SketchMeshIntersection&, unsigned int)
 DELEGATE2 (bool, SketchMesh, intersects, const PrimRay&, SketchPathIntersection&)
 DELEGATE1 (void, SketchMesh, render, Camera&)

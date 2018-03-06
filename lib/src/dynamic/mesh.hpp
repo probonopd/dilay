@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #ifndef DILAY_DYNAMIC_MESH
@@ -89,12 +89,12 @@ public:
   const RenderMode& renderMode () const;
   RenderMode&       renderMode ();
 
-  bool intersects (const PrimRay&, Intersection&) const;
-  bool intersects (const PrimRay&, DynamicMeshIntersection&);
-  bool intersects (const PrimRay&, bool, DynamicFaces&) const;
-  bool intersects (const PrimPlane&, DynamicFaces&) const;
-  bool intersects (const PrimSphere&, DynamicFaces&) const;
-  bool intersects (const PrimAABox&, DynamicFaces&) const;
+  bool  intersects (const PrimRay&, Intersection&, bool = false) const;
+  bool  intersects (const PrimRay&, DynamicMeshIntersection&);
+  bool  intersects (const PrimPlane&, DynamicFaces&) const;
+  bool  intersects (const PrimSphere&, DynamicFaces&) const;
+  bool  intersects (const PrimAABox&, DynamicFaces&) const;
+  float unsignedDistance (const glm::vec3&) const;
 
   void               normalize ();
   void               scale (const glm::vec3&);

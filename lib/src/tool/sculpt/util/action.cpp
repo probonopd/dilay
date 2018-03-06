@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <functional>
@@ -787,27 +787,29 @@ namespace ToolSculptAction
       }
       else
       {
-        ToolSculptEdgeMap newEdges;
-        do
+        if (brush.subdivide ())
         {
-          newEdges.reset ();
-
-          extendAndFilterDomain (brush, faces, 1);
-          extendDomainByPoles (mesh, faces);
-
-          const float maxLength = glm::max (brush.subdivThreshold (), 2.0f * minEdgeLength);
-          splitEdges (mesh, newEdges, maxLength, faces);
-
-          if (newEdges.isEmpty () == false)
+          ToolSculptEdgeMap newEdges;
+          do
           {
-            triangulate (mesh, newEdges, faces);
-          }
-          extendDomain (mesh, faces, 1);
-          relaxEdges (mesh, faces);
-          smooth (mesh, faces);
-          finalize (mesh, faces);
-        } while (faces.numElements () > 0 && newEdges.isEmpty () == false);
+            newEdges.reset ();
 
+            extendAndFilterDomain (brush, faces, 1);
+            extendDomainByPoles (mesh, faces);
+
+            const float maxLength = glm::max (brush.subdivThreshold (), 2.0f * minEdgeLength);
+            splitEdges (mesh, newEdges, maxLength, faces);
+
+            if (newEdges.isEmpty () == false)
+            {
+              triangulate (mesh, newEdges, faces);
+            }
+            extendDomain (mesh, faces, 1);
+            relaxEdges (mesh, faces);
+            smooth (mesh, faces);
+            finalize (mesh, faces);
+          } while (faces.numElements () > 0 && newEdges.isEmpty () == false);
+        }
         faces = brush.getAffectedFaces ();
         brush.sculpt (faces);
         collapseEdgesByLength (mesh, minEdgeLength * minEdgeLength, faces);

@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
@@ -87,7 +87,7 @@ struct Tool::Impl
 
   ToolResponse cursorUpdate (const glm::ivec2& pos) { return this->self->runCursorUpdate (pos); }
 
-  void close () { return this->self->runClose (); }
+  ToolResponse commit () { return this->self->runCommit (); }
 
   void fromConfig ()
   {
@@ -284,7 +284,7 @@ DELEGATE1_CONST (void, Tool, paint, QPainter&)
 DELEGATE1 (ToolResponse, Tool, pointingEvent, const ViewPointingEvent&)
 DELEGATE1 (ToolResponse, Tool, wheelEvent, const QWheelEvent&)
 DELEGATE1 (ToolResponse, Tool, cursorUpdate, const glm::ivec2&)
-DELEGATE (void, Tool, close)
+DELEGATE (ToolResponse, Tool, commit)
 DELEGATE (void, Tool, fromConfig)
 GETTER_CONST (State&, Tool, state)
 DELEGATE (void, Tool, updateGlWidget)

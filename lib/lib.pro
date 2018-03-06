@@ -20,6 +20,7 @@ SOURCES += \
            src/history.cpp \
            src/import-export.cpp \
            src/intersection.cpp \
+           src/isosurface-extraction.cpp \
            src/kvstore.cpp \
            src/log.cpp \
            src/mesh.cpp \
@@ -40,7 +41,6 @@ SOURCES += \
            src/scene.cpp \
            src/shader.cpp \
            src/sketch/bone-intersection.cpp \
-           src/sketch/conversion.cpp \
            src/sketch/mesh.cpp \
            src/sketch/mesh-intersection.cpp \
            src/sketch/node-intersection.cpp \
@@ -58,6 +58,7 @@ SOURCES += \
            src/tool/new-mesh.cpp \
            src/tool/new-sketch.cpp \
            src/tool/rebalance-sketch.cpp \
+           src/tool/remesh.cpp \
            src/tool/rotate-mesh.cpp \
            src/tool/sculpt.cpp \
            src/tool/sculpt/draw.cpp \
@@ -119,6 +120,7 @@ HEADERS += \
            src/history.hpp \
            src/import-export.hpp \
            src/intersection.hpp \
+           src/isosurface-extraction.hpp \
            src/kvstore.hpp \
            src/log.hpp \
            src/macro.hpp \
@@ -141,7 +143,6 @@ HEADERS += \
            src/scene.hpp \
            src/shader.hpp \
            src/sketch/bone-intersection.hpp \
-           src/sketch/conversion.hpp \
            src/sketch/fwd.hpp \
            src/sketch/mesh.hpp \
            src/sketch/mesh-intersection.hpp \

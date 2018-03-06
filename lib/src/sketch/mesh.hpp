@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #ifndef DILAY_SKETCH_MESH
@@ -30,8 +30,7 @@ public:
   void               reset ();
   bool               intersects (const PrimRay&, SketchNodeIntersection&);
   bool               intersects (const PrimRay&, SketchBoneIntersection&);
-  bool               intersects (const PrimRay&, SketchMeshIntersection&);
-  bool               intersects (const PrimRay&, SketchMeshIntersection&, unsigned int);
+  bool               intersects (const PrimRay&, SketchMeshIntersection&, unsigned int = 0);
   bool               intersects (const PrimRay&, SketchPathIntersection&);
   void               render (Camera&);
   void               renderWireframe (bool);

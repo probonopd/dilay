@@ -1,12 +1,11 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #ifndef DILAY_INTERSECTION
 #define DILAY_INTERSECTION
 
-#include <glm/fwd.hpp>
-#include "macro.hpp"
+#include <glm/glm.hpp>
 
 class PrimAABox;
 class PrimCone;
@@ -19,19 +18,24 @@ class PrimTriangle;
 class Intersection
 {
 public:
-  DECLARE_BIG6_VIRTUAL (Intersection)
+  Intersection ();
 
-  void             reset ();
   bool             isIntersection () const;
   const glm::vec3& position () const;
   const glm::vec3& normal () const;
   float            distance () const;
-  bool             update (float, const glm::vec3&, const glm::vec3&);
+
+  void reset ();
+  bool update (float, const glm::vec3&, const glm::vec3&);
 
   static Intersection& min (Intersection&, Intersection&);
+  static void          sort (Intersection&, Intersection&);
 
 private:
-  IMPLEMENTATION
+  bool      _isIntersection;
+  float     _distance;
+  glm::vec3 _position;
+  glm::vec3 _normal;
 };
 
 namespace IntersectionUtil
@@ -42,7 +46,7 @@ namespace IntersectionUtil
   bool intersects (const PrimRay&, const PrimSphere&, float*);
   bool intersects (const PrimRay&, const PrimPlane&, float*);
   bool intersects (const PrimRay&, const PrimTriangle&, bool, float*);
-  bool intersects (const PrimRay&, const PrimAABox&);
+  bool intersects (const PrimRay&, const PrimAABox&, float*);
   bool intersects (const PrimRay&, const PrimCylinder&, float*, float*);
   bool intersects (const PrimRay&, const PrimCone&, float*, float*);
   bool intersects (const PrimPlane&, const PrimAABox&);

@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include "cache.hpp"
@@ -23,6 +23,8 @@ struct ToolSculptReduce::Impl
     auto& params = brush.initParameters<SBReduceParameters> ();
 
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
+
+    brush.subdivide (false);
   }
 
   void runSetupCursor (ViewCursor&) {}

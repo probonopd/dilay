@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
@@ -10,7 +10,6 @@
 #include "tool/sculpt/util/brush.hpp"
 #include "tool/util/movement.hpp"
 #include "tools.hpp"
-#include "view/cursor.hpp"
 #include "view/double-slider.hpp"
 #include "view/pointing-event.hpp"
 #include "view/two-column-grid.hpp"
@@ -33,6 +32,8 @@ struct ToolSculptFlatten::Impl
 
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
     params.lockPlane (this->self->cache ().get<bool> ("lock-plane", false));
+
+    brush.subdivide (false);
   }
 
   void runSetupCursor (ViewCursor&) {}

@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QObject>
@@ -49,9 +49,13 @@ struct ToolRebalanceSketch::Impl
     return ToolResponse::None;
   }
 
-  void runClose () { this->self->state ().scene ().renderWireframe (this->renderWireframe); }
+  ToolResponse runCommit ()
+  {
+    this->self->state ().scene ().renderWireframe (this->renderWireframe);
+    return ToolResponse::Redraw;
+  }
 };
 
 DELEGATE_TOOL (ToolRebalanceSketch, "rebalance-sketch")
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRebalanceSketch)
-DELEGATE_TOOL_RUN_CLOSE (ToolRebalanceSketch)
+DELEGATE_TOOL_RUN_COMMIT (ToolRebalanceSketch)
