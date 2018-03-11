@@ -1,15 +1,19 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
 #include "cache.hpp"
+#include "distance.hpp"
 #include "dynamic/mesh.hpp"
+#include "isosurface-extraction.hpp"
 #include "mesh.hpp"
+#include "primitive/aabox.hpp"
+#include "primitive/cone-sphere.hpp"
 #include "scene.hpp"
-#include "sketch/conversion.hpp"
 #include "sketch/mesh-intersection.hpp"
 #include "sketch/mesh.hpp"
+#include "sketch/path.hpp"
 #include "state.hpp"
 #include "tool/sculpt/util/action.hpp"
 #include "tools.hpp"
@@ -43,7 +47,6 @@ struct ToolConvertSketch::Impl
   const float        maxResolution;
   float              resolution;
   bool               moveToCenter;
-  bool               smoothMesh;
 
   Impl (ToolConvertSketch* s)
     : self (s)
@@ -51,7 +54,6 @@ struct ToolConvertSketch::Impl
     , maxResolution (0.1f)
     , resolution (s->cache ().get<float> ("resolution", 0.06))
     , moveToCenter (s->cache ().get<bool> ("move-to-center", true))
-    , smoothMesh (s->cache ().get<bool> ("smooth-mesh", true))
   {
   }
 
@@ -82,13 +84,6 @@ struct ToolConvertSketch::Impl
       this->self->cache ().set ("move-to-center", m);
     });
     properties.add (moveToCenterEdit);
-
-    QCheckBox& smoothMeshEdit = ViewUtil::checkBox (QObject::tr ("Smooth mesh"), this->smoothMesh);
-    ViewUtil::connect (smoothMeshEdit, [this](bool s) {
-      this->smoothMesh = s;
-      this->self->cache ().set ("smooth-mesh", s);
-    });
-    properties.add (smoothMeshEdit);
   }
 
   void setupToolTip ()
@@ -96,6 +91,44 @@ struct ToolConvertSketch::Impl
     ViewToolTip toolTip;
     toolTip.add (ViewInput::Event::MouseLeft, QObject::tr ("Convert selection"));
     this->self->showToolTip (toolTip);
+  }
+
+  DynamicMesh& convert (SketchMesh& sketch)
+  {
+    const float resolution = this->maxResolution + this->minResolution - this->resolution;
+
+    glm::vec3 min, max;
+    sketch.minMax (min, max);
+
+    const IsosurfaceExtraction::DistanceCallback getDistance = [&sketch](const glm::vec3& pos) {
+      float distance = Util::maxFloat ();
+
+      if (sketch.tree ().hasRoot ())
+      {
+        sketch.tree ().root ().forEachConstNode ([&pos, &distance](const SketchNode& node) {
+          const float d =
+            node.parent ()
+              ? Distance::distance (PrimConeSphere (node.data (), node.parent ()->data ()), pos)
+              : Distance::distance (node.data (), pos);
+
+          distance = glm::min (distance, d);
+        });
+      }
+      for (const SketchPath& p : sketch.paths ())
+      {
+        for (const PrimSphere& s : p.spheres ())
+        {
+          distance = glm::min (distance, Distance::distance (s, pos));
+        }
+      }
+      return distance;
+    };
+
+    sketch.optimizePaths ();
+    Mesh mesh = IsosurfaceExtraction::extract (getDistance, PrimAABox (min, max), resolution);
+
+    State& state = this->self->state ();
+    return state.scene ().newDynamicMesh (state.config (), mesh);
   }
 
   ToolResponse runReleaseEvent (const ViewPointingEvent& e)
@@ -109,22 +142,16 @@ struct ToolConvertSketch::Impl
         glm::vec3   center = computeCenter (sMesh);
 
         this->self->snapshotAll ();
-        sMesh.optimizePaths ();
 
-        Mesh mesh = SketchConversion::convert (sMesh, this->maxResolution + this->minResolution -
-                                                        this->resolution);
-        DynamicMesh& dMesh =
-          this->self->state ().scene ().newDynamicMesh (this->self->state ().config (), mesh);
+        DynamicMesh& dMesh = this->convert (sMesh);
+
         if (this->moveToCenter)
         {
           dMesh.translate (-center);
           dMesh.normalize ();
           dMesh.bufferData ();
         }
-        if (this->smoothMesh)
-        {
-          ToolSculptAction::smoothMesh (dMesh);
-        }
+        ToolSculptAction::smoothMesh (dMesh);
         this->self->state ().scene ().deleteMesh (sMesh);
         return ToolResponse::Redraw;
       }

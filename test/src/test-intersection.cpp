@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
@@ -14,12 +14,15 @@
 #include "test-intersection.hpp"
 #include "util.hpp"
 
-void TestIntersection::test ()
+void TestIntersection::test1 ()
 {
   using IntersectionUtil::intersects;
 
-  PrimTriangle tri (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (2.0f, 0.0f, 0.0f),
-                    glm::vec3 (0.0f, 2.0f, 0.0f));
+  const glm::vec3 v1 (0.0f, 0.0f, 0.0f);
+  const glm::vec3 v2 (2.0f, 0.0f, 0.0f);
+  const glm::vec3 v3 (0.0f, 2.0f, 0.0f);
+
+  PrimTriangle tri (v1, v2, v3);
   PrimSphere   sph (glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f);
   PrimPlane    pln (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f));
   PrimAABox    abx (glm::vec3 (0.0f, 0.0f, 0.0f), 1.0f);
@@ -28,11 +31,11 @@ void TestIntersection::test ()
 
   float t = 0.0f;
 
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
+  assert (intersects (PrimRay (glm::vec3 (0.1f, 0.1f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
                       false, nullptr));
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
+  assert (intersects (PrimRay (glm::vec3 (0.1f, 0.1f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), tri,
                       false, nullptr) == false);
-  assert (intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
+  assert (intersects (PrimRay (true, glm::vec3 (0.1f, 0.1f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
                       tri, false, nullptr));
 
   assert (
@@ -59,18 +62,20 @@ void TestIntersection::test ()
                       pln, &t));
   assert (t < 0.0f);
 
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx));
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx));
-  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx) ==
-          false);
-  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx) ==
-          false);
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
-                      abx) == false);
-  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx) ==
-          false);
-  assert (
-    intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx));
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr));
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr));
+  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (1.5f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (glm::vec3 (0.0f, 0.0f, 1.0f), glm::vec3 (0.0f, 0.0f, 1.0f)), abx,
+                      nullptr) == false);
+  assert (intersects (PrimRay (true, glm::vec3 (0.0f, 0.0f, -1.0f), glm::vec3 (0.0f, 0.0f, -1.0f)),
+                      abx, nullptr));
 
   assert (intersects (PrimPlane (glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f)), abx));
   assert (intersects (PrimPlane (glm::vec3 (0.0f, 0.4f, 0.0f), glm::vec3 (0.0f, 1.0f, 0.0f)), abx));
@@ -93,4 +98,22 @@ void TestIntersection::test ()
   assert (intersects (cne, glm::vec3 (0.5f, 1.0f, 0.0f)));
   assert (intersects (cne, glm::vec3 (0.8f, 0.1f, 0.0f)));
   unused (t);
+}
+
+void TestIntersection::test2 ()
+{
+  Intersection i1, i2;
+
+  i1.update (2.0f, glm::vec3 (2.0f), glm::vec3 (2.0f));
+  i2.update (1.0f, glm::vec3 (1.0f), glm::vec3 (1.0f));
+
+  Intersection::sort (i1, i2);
+
+  assert (i1.distance () == 1.0f);
+  assert (i1.position () == glm::vec3 (1.0f));
+  assert (i1.normal () == glm::vec3 (1.0f));
+
+  assert (i2.distance () == 2.0f);
+  assert (i2.position () == glm::vec3 (2.0f));
+  assert (i2.normal () == glm::vec3 (2.0f));
 }

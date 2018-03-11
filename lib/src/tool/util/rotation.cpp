@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtc/constants.hpp>
@@ -58,7 +58,7 @@ struct ToolUtilRotation::Impl
 
         if (Util::cross (this->direction, newDirection) > 0.0f)
         {
-          this->angle = glm::two_pi<float> () - this->angle;
+          this->angle = (2.0f * glm::pi<float> ()) - this->angle;
         }
       }
       this->direction = newDirection;

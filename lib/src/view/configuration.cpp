@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <algorithm>
 #include <array>
+#include <functional>
 #include "../util.hpp"
 #include "color.hpp"
 #include "config.hpp"

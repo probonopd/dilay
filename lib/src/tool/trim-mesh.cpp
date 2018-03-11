@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPainter>
@@ -128,10 +128,10 @@ struct ToolTrimMesh::Impl
     const glm::ivec2& p1 = reverse ? this->points[1] : this->points[0];
     const glm::ivec2& p2 = reverse ? this->points[0] : this->points[1];
     const float       fOffset = 0.5f * float(offset);
-    const glm::ivec2  orth =
-      glm::ceil (glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1))) * fOffset);
-    const PrimRay ray1 = this->self->state ().camera ().ray (p1 + orth);
-    const PrimRay ray2 = this->self->state ().camera ().ray (p2 + orth);
+    const glm::vec2   normOrth = glm::normalize (glm::vec2 (Util::orthogonalRight (p2 - p1)));
+    const glm::ivec2  orth = glm::ivec2 (glm::ceil (normOrth * fOffset));
+    const PrimRay     ray1 = this->self->state ().camera ().ray (p1 + orth);
+    const PrimRay     ray2 = this->self->state ().camera ().ray (p2 + orth);
 
     ToolTrimMeshBorder border (mesh, ray1, ray2);
 
@@ -305,6 +305,12 @@ struct ToolTrimMesh::Impl
       painter.drawLine (ViewUtil::toQPoint (this->points[this->points.size () - 1]), cursorPos);
     }
   }
+
+  ToolResponse runCommit ()
+  {
+    this->points.clear ();
+    return ToolResponse::Redraw;
+  }
 };
 
 DELEGATE_TOOL (ToolTrimMesh, "trim-mesh")
@@ -312,3 +318,4 @@ DELEGATE_TOOL_RUN_MOVE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_MOUSE_WHEEL_EVENT (ToolTrimMesh)
 DELEGATE_TOOL_RUN_PAINT (ToolTrimMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolTrimMesh)

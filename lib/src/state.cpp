@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QPushButton>
@@ -140,11 +140,12 @@ struct State::Impl
           this->addToolShortcut<ToolSculptDraw> (tip, ViewInput::Event::D);
           this->addToolShortcut<ToolSculptCrease> (tip, ViewInput::Event::C);
           this->addToolShortcut<ToolSculptGrab> (tip, ViewInput::Event::G);
-          this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
-          this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
           this->addToolShortcut<ToolSculptPinch> (tip, ViewInput::Event::P);
+          this->addToolShortcut<ToolSculptSmooth> (tip, ViewInput::Event::S);
+          this->addToolShortcut<ToolSculptFlatten> (tip, ViewInput::Event::F);
           this->addToolShortcut<ToolSculptReduce> (tip, ViewInput::Event::R);
           this->addToolShortcut<ToolTrimMesh> (tip, ViewInput::Event::T);
+          this->addToolShortcut<ToolRemesh> (tip, ViewInput::Event::M);
 #ifndef NDEBUG
           this->addExitToolShortcut (tip, ViewInput::Event::Esc);
 #endif
@@ -157,7 +158,8 @@ struct State::Impl
                                            (this->toolPtr->key () == ToolSculptFlatten::classKey) ||
                                            (this->toolPtr->key () == ToolSculptPinch::classKey) ||
                                            (this->toolPtr->key () == ToolSculptReduce::classKey) ||
-                                           (this->toolPtr->key () == ToolTrimMesh::classKey);
+                                           (this->toolPtr->key () == ToolTrimMesh::classKey) ||
+                                           (this->toolPtr->key () == ToolRemesh::classKey);
 
           const bool toggleBack = this->previousToolKey &&
                                   (this->previousToolKey != ToolSculptSmooth::classKey) &&
@@ -219,7 +221,7 @@ struct State::Impl
     {
       this->previousToolKey = this->toolPtr->key ();
       this->mainWindow.toolPane ().button (this->toolPtr->key ()).setChecked (false);
-      this->toolPtr->close ();
+      this->toolPtr->commit ();
       this->toolPtr.reset ();
 
       this->mainWindow.toolPane ().properties ().reset ();
@@ -245,6 +247,10 @@ struct State::Impl
 
   void undo ()
   {
+    if (this->hasTool ())
+    {
+      this->handleToolResponse (this->toolPtr->commit ());
+    }
     this->history.undo (*this->self);
     this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();
@@ -252,6 +258,10 @@ struct State::Impl
 
   void redo ()
   {
+    if (this->hasTool ())
+    {
+      this->handleToolResponse (this->toolPtr->commit ());
+    }
     this->history.redo (*this->self);
     this->mainWindow.infoPane ().scene ().updateInfo ();
     this->mainWindow.update ();

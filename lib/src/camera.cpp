@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/gtc/matrix_transform.hpp>
@@ -40,7 +40,7 @@ struct Camera::Impl
 
   const glm::vec3& up () const
   {
-    static constexpr glm::vec3 up (0.0f, 1.0f, 0.0f);
+    static const glm::vec3 up (0.0f, 1.0f, 0.0f);
     return up;
   }
 

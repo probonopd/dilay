@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
@@ -76,12 +76,12 @@ struct ToolMoveMesh::Impl
   {
     if (e.leftButton ())
     {
-      this->runClose ();
+      return this->runCommit ();
     }
     return ToolResponse::None;
   }
 
-  void runClose ()
+  ToolResponse runCommit ()
   {
     if (this->mesh)
     {
@@ -89,6 +89,7 @@ struct ToolMoveMesh::Impl
       this->mesh->bufferData ();
       this->mesh = nullptr;
     }
+    return ToolResponse::None;
   }
 };
 
@@ -96,4 +97,4 @@ DELEGATE_TOOL (ToolMoveMesh, "move-mesh")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolMoveMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolMoveMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolMoveMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolMoveMesh)

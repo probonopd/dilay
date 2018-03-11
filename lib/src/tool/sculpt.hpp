@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #ifndef DILAY_TOOL_SCULPT
@@ -37,6 +37,7 @@ private:
   ToolResponse runPointingEvent (const ViewPointingEvent&);
   ToolResponse runWheelEvent (const QWheelEvent&);
   ToolResponse runCursorUpdate (const glm::ivec2&);
+  ToolResponse runCommit ();
   void         runFromConfig ();
 
   virtual void runSetupBrush (SculptBrush&) = 0;

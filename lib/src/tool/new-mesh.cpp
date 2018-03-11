@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QSlider>
@@ -53,13 +53,14 @@ struct ToolNewMesh::Impl
     }
   }
 
-  void runClose ()
+  ToolResponse runCommit ()
   {
     if (this->mesh)
     {
       this->self->snapshotDynamicMeshes ();
       this->self->state ().scene ().newDynamicMesh (this->self->state ().config (), *this->mesh);
     }
+    return ToolResponse::None;
   }
 
   void setupProperties ()
@@ -103,4 +104,4 @@ struct ToolNewMesh::Impl
 
 DELEGATE_TOOL (ToolNewMesh, "new-mesh")
 DELEGATE_TOOL_RUN_RENDER (ToolNewMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolNewMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolNewMesh)

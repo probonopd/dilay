@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <fstream>
@@ -173,8 +173,8 @@ unsigned int Util::solveCubicEq (float a, float b, float c, float& s1, float& s2
     const float f = -2.0f * glm::sqrt (q);
 
     s1 = (f * glm::cos (theta / 3.0f)) - s;
-    s2 = (f * glm::cos ((theta + glm::two_pi<float> ()) / 3.0f)) - s;
-    s3 = (f * glm::cos ((theta - glm::two_pi<float> ()) / 3.0f)) - s;
+    s2 = (f * glm::cos ((theta + (2.0f * glm::pi<float> ())) / 3.0f)) - s;
+    s3 = (f * glm::cos ((theta - (2.0f * glm::pi<float> ())) / 3.0f)) - s;
     return 3;
   }
   else

@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <glm/glm.hpp>
@@ -110,12 +110,12 @@ struct ToolRotateMesh::Impl
   {
     if (e.leftButton ())
     {
-      this->runClose ();
+      return this->runCommit ();
     }
     return ToolResponse::None;
   }
 
-  void runClose ()
+  ToolResponse runCommit ()
   {
     if (this->mesh)
     {
@@ -123,6 +123,7 @@ struct ToolRotateMesh::Impl
       this->mesh->bufferData ();
       this->mesh = nullptr;
     }
+    return ToolResponse::None;
   }
 };
 
@@ -130,4 +131,4 @@ DELEGATE_TOOL (ToolRotateMesh, "rotate-mesh")
 DELEGATE_TOOL_RUN_MOVE_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_PRESS_EVENT (ToolRotateMesh)
 DELEGATE_TOOL_RUN_RELEASE_EVENT (ToolRotateMesh)
-DELEGATE_TOOL_RUN_CLOSE (ToolRotateMesh)
+DELEGATE_TOOL_RUN_COMMIT (ToolRotateMesh)

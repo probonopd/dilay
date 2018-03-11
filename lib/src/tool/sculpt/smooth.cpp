@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #include <QCheckBox>
@@ -24,7 +24,8 @@ struct ToolSculptSmooth::Impl
     auto& params = brush.initParameters<SBSmoothParameters> ();
 
     params.intensity (this->self->cache ().get<float> ("intensity", 0.5f));
-    params.relaxOnly (this->self->cache ().get<bool> ("relax-only", false));
+
+    brush.subdivide (false);
   }
 
   void runSetupCursor (ViewCursor&) {}
@@ -38,17 +39,8 @@ struct ToolSculptSmooth::Impl
       params.intensity (i);
       this->self->cache ().set ("intensity", i);
     });
-    intensityEdit.setEnabled (!params.relaxOnly ());
     properties.addStacked (QObject::tr ("Intensity"), intensityEdit);
     this->self->registerSecondarySlider (intensityEdit);
-
-    QCheckBox& relaxEdit = ViewUtil::checkBox (QObject::tr ("Relax only"), params.relaxOnly ());
-    ViewUtil::connect (relaxEdit, [this, &params, &intensityEdit](bool r) {
-      params.relaxOnly (r);
-      intensityEdit.setEnabled (!r);
-      this->self->cache ().set ("relax-only", r);
-    });
-    properties.add (relaxEdit);
   }
 
   void runSetupToolTip (ViewToolTip& toolTip)

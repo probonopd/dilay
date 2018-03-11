@@ -1,5 +1,5 @@
 /* This file is part of Dilay
- * Copyright © 2015-2017 Alexander Bau
+ * Copyright © 2015-2018 Alexander Bau
  * Use and redistribute under the terms of the GNU General Public License
  */
 #ifndef DILAY_PRIMITIVE_RAY
@@ -17,13 +17,15 @@ public:
   const glm::vec3& origin () const { return this->_origin; }
   const glm::vec3& direction () const { return this->_direction; }
 
+  void origin (const glm::vec3& o) { this->_origin = o; }
+
   glm::vec3 pointAt (float) const;
   float     distance (const glm::vec3&) const;
   bool      onRay (const glm::vec3&) const;
 
 private:
   const bool      _isLine;
-  const glm::vec3 _origin;
+  glm::vec3       _origin;
   const glm::vec3 _direction;
 };
 
